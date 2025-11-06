@@ -31,3 +31,6 @@ coverage/
 # Misc
 *.pem
 .cache/
+
+DEPLOYMENT_CHECKLIST.md
+DEPLOYMENT.md
