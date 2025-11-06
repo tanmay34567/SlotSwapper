@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight } from 'lucide-react'
+import { signup } from '../../api'
 
 export default function Signup() {
   const [name, setName] = useState('')
@@ -29,17 +30,7 @@ export default function Signup() {
 
     try {
       // Call signup API but don't auto-login
-      const response = await fetch(import.meta.env.VITE_API_URL?.replace('/api', '') + '/api/auth/signup' || 'http://localhost:4000/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
-      })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Signup failed')
-      }
+      await signup(name, email, password)
       
       // Redirect to login page after successful signup
       navigate('/login', { 
