@@ -6,10 +6,29 @@ let io;
 // Store user socket connections (userId -> socketId)
 const userSockets = new Map();
 
+function getAllowedOrigins() {
+  const raw = process.env.CLIENT_URL;
+  const originsFromEnv = raw
+    ? raw.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
+
+  const defaults = ['http://localhost:3000', 'http://localhost:5173'];
+  const merged = Array.from(new Set([...originsFromEnv, ...defaults]));
+
+  const vercelPreview = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
+
+  return (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (merged.includes(origin)) return callback(null, true);
+    if (vercelPreview.test(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  };
+}
+
 function initializeSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:3000',
+      origin: getAllowedOrigins(),
       methods: ['GET', 'POST'],
       credentials: true
     }
